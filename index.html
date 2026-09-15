@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Run To Earn 2</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+body{margin:0;background:linear-gradient(#87CEEB,#fff);font-family:Arial;overflow:hidden;text-align:center}
+#game{position:relative;width:100%;height:100vh}
+#mika{position:absolute;bottom:80px;left:30px;font-size:60px;transition:bottom 0.2s}
+.jump{bottom:200px!important}
+#ground{position:absolute;bottom:0;width:100%;height:80px;background:#4CAF50}
+.coin{position:absolute;bottom:120px;right:-50px;font-size:30px;animation:move 3s linear}
+@keyframes move{to{right:100vw}}
+#score{position:absolute;top:20px;left:20px;font-size:24px;font-weight:bold}
+#btn{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);padding:15px 40px;background:#000;color:#fff;border-radius:30px;font-size:18px}
+</style>
+</head>
+<body>
+<div id="game">
+<div id="score">💰 0</div>
+<div id="mika">🏃‍♀️</div>
+<div id="ground"></div>
+<button id="btn" onclick="jump()">JUMP</button>
+</div>
+<script>
+let score = parseInt(localStorage.getItem('r2_score')||0);
+let adController = null;
+document.getElementById('score').innerText='💰 '+score;
+
+function initAds(){
+try{
+adController = window.Adsgram.init({blockId:"YOUR_BLOCK_ID", debug:false});
+}catch(e){console.log("ads not ready")}
+}
+
+function jump(){
+let m=document.getElementById('mika');
+m.classList.add('jump');
+setTimeout(()=>m.classList.remove('jump'),300);
+score+=1;
+document.getElementById('score').innerText='💰 '+score;
+localStorage.setItem('r2_score',score);
+if(score%20===0) showAd();
+}
+
+function showAd(){
+if(adController){
+adController.show().then(()=>{score+=20;document.getElementById('score').innerText='💰 '+score;localStorage.setItem('r2_score',score);}).catch(()=>{});
+}
+}
+
+setInterval(()=>{
+let c=document.createElement('div');
+c.className='coin';c.innerText='🪙';
+c.style.bottom=(100+Math.random()*100)+'px';
+document.getElementById('game').appendChild(c);
+setTimeout(()=>c.remove(),3000);
+c.onclick=()=>{score+=5;document.getElementById('score').innerText='💰 '+score;localStorage.setItem('r2_score',score);c.remove();}
+},1500);
+
+Telegram.WebApp.ready();Telegram.WebApp.expand();
+initAds();
+</script>
+</body>
+</html>
